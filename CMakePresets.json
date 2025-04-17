@@ -1,0 +1,51 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 21,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "ci",
+      "description": "CI build on Ubuntu",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build",
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/vcpkg/scripts/buildsystems/vcpkg.cmake"
+      }
+    },
+    {
+      "name": "dev",
+      "description": "Local dev build on macOS M1",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build",
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/vcpkg/scripts/buildsystems/vcpkg.cmake",
+        "VCPKG_DEFAULT_TRIPLET": "arm64-osx"
+      }
+    }
+  ],
+
+  "buildPresets": [
+    {
+      "name": "ci",
+      "configurePreset": "ci"
+    },
+    {
+      "name": "dev",
+      "configurePreset": "dev"
+    }
+  ],
+
+  "testPresets": [
+    {
+      "name": "ci",
+      "configurePreset": "ci"
+    },
+    {
+      "name": "dev",
+      "configurePreset": "dev"
+    }
+  ]
+}

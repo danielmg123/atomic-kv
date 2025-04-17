@@ -10,19 +10,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up vcpkg
-        uses: lukka/run-vcpkg@v11
+      - name: Setup vcpkg and CMake
+        uses: lukka/run-cmake@v10
         with:
-          vcpkgDirectory: '${{ github.workspace }}/vcpkg'
-          vcpkgJsonGlob: '**/vcpkg.json'
-
-      - name: Configure CMake
-        run: cmake -B build -G Ninja \
-          -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake \
-          -DCMAKE_BUILD_TYPE=Debug
-
-      - name: Build
-        run: cmake --build build
-
-      - name: Run tests
-        run: ctest --test-dir build
+          configurePreset: "ci"
+          buildPreset: "ci"
+          testPreset:      "ci"
