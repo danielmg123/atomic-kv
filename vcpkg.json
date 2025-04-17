@@ -1,0 +1,15 @@
+{
+    "name": "atomic-kv",
+    "version-string": "0.0.1",
+    "builtin-baseline": "7cd46ec6873c1325b541a068c8e4cdf54633dabe",
+    "dependencies": [
+      "asio",
+      "fmt",
+      "gtest",
+      "benchmark",
+      "spdlog"
+    ],
+    "overrides": [
+        { "name": "asio", "version-string": "1.30.2" }
+    ]
+}

@@ -1,0 +1,52 @@
+# macOS system files
+.DS_Store
+
+# VSCode
+.vscode/
+*.code-workspace
+
+# CMake build artifacts
+build/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+compile_commands.json
+
+# Ninja build logs
+.ninja_deps
+.ninja_log
+rules.ninja
+build.ninja
+
+# vcpkg installed packages
+vcpkg_installed/
+.vcpkg/
+
+# Generated executables
+kvstore
+kv-server
+kv-cli
+
+# Logs or profiling data
+*.log
+*.perf
+*.out
+*.svg
+*.flamegraph
+
+# Benchmark results or temp test data
+benchmarks/results/
+*.csv
+
+# Editor backups / temp files
+*~
+*.swp
+*.tmp
+
+# Sanitizer logs
+leak-check.*
+sanitizer-output.*
+
+# Pre-commit / tool caches
+.cache/
