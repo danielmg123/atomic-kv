@@ -14,7 +14,7 @@ find_package(GTest CONFIG REQUIRED)
 find_package(benchmark CONFIG REQUIRED)
 
 # Core library
-add_library(kv_core STATIC src/kv_core.cpp) # create this file or use main logic
+add_library(kv_core STATIC src/kv_core.cpp)
 target_link_libraries(kv_core PUBLIC fmt::fmt asio::asio spdlog::spdlog)
 
 # CLI

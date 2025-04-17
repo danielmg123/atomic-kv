@@ -1,0 +1,9 @@
+Checks:          'clang-analyzer-*,bugprone-*,performance-*,modernize-*'
+WarningsAsErrors: ''
+HeaderFilterRegex: '.*'
+FormatStyle:     none
+ExtraArgs: [
+  "-isysroot", "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk",
+  "-stdlib=libc++",
+  "-Ibuild/vcpkg_installed/arm64-osx/include"
+]
