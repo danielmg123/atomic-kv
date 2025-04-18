@@ -10,9 +10,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Setup vcpkg and CMake
-        uses: lukka/run-cmake@v10
-        with:
-          configurePreset: "ci"
-          buildPreset: "ci"
-          testPreset:      "ci"
+      - name: Install CMake & Ninja
+        uses: lukka/get-cmake@latest
+
+      - name: Bootstrap vcpkg
+        uses: lukka/run-vcpkg@v11
+
+      - name: Configure (show CMake errors)
+        run: cmake --preset ci
+
+      - name: Build
+        run: cmake --build --preset ci
+
+      - name: Test
+        run: ctest --preset ci --output-on-failure

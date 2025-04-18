@@ -12,7 +12,8 @@
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/build",
       "cacheVariables": {
-        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/vcpkg/scripts/buildsystems/vcpkg.cmake"
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/vcpkg/scripts/buildsystems/vcpkg.cmake",
+        "CMAKE_VERBOSE_MAKEFILE": "ON"
       }
     },
     {
@@ -26,7 +27,6 @@
       }
     }
   ],
-
   "buildPresets": [
     {
       "name": "ci",
@@ -37,7 +37,6 @@
       "configurePreset": "dev"
     }
   ],
-
   "testPresets": [
     {
       "name": "ci",
