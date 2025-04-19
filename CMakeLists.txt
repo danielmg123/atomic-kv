@@ -28,7 +28,11 @@ target_link_libraries(kv_server PRIVATE kv_core)
 
 # Tests
 enable_testing()
-add_executable(kv_tests tests/lock_free_hash_map_test.cpp)
+add_executable(kv_tests
+  tests/lock_free_hash_map_test.cpp
+  tests/lock_free_hash_map_concurrency_test.cpp
+)
+
 target_include_directories(kv_tests PRIVATE ${PROJECT_SOURCE_DIR}/include)
 target_link_libraries(kv_tests PRIVATE kv_core GTest::gtest)
 add_test(NAME all COMMAND kv_tests)
