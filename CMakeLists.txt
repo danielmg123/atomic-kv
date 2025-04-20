@@ -32,17 +32,16 @@ add_executable(kv_tests
   tests/lock_free_hash_map_test.cpp
   tests/lock_free_hash_map_concurrency_test.cpp
 )
-
 target_include_directories(kv_tests PRIVATE ${PROJECT_SOURCE_DIR}/include)
 target_link_libraries(kv_tests PRIVATE kv_core GTest::gtest)
 add_test(NAME all COMMAND kv_tests)
 
-# Benchmarks
-add_executable(kv_bench benchmarks/placeholder.cpp)
+# Benchmarks (REAL benchmark file!)
+add_executable(kv_bench benchmarks/lock_free_hash_map_bench.cpp)
 target_include_directories(kv_bench PRIVATE ${PROJECT_SOURCE_DIR}/include)
-target_link_libraries(kv_bench PRIVATE kv_core benchmark::benchmark)
+target_link_libraries(kv_bench PRIVATE kv_core benchmark::benchmark_main)
 
-# Enable sanitizers (AddressSanitizer, UndefinedBehaviorSanitizer)
+# Enable sanitizers (Debug only — not for perf testing!)
 option(ENABLE_SANITIZERS "Enable address/undefined sanitizers" ON)
 if (ENABLE_SANITIZERS)
     message(STATUS "Building with sanitizers enabled")
