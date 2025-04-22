@@ -25,6 +25,18 @@
         "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/vcpkg/scripts/buildsystems/vcpkg.cmake",
         "VCPKG_DEFAULT_TRIPLET": "arm64-osx"
       }
+    },
+    {
+      "name": "perf",
+      "description": "Performance build: Release without sanitizers",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build-perf",
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/vcpkg/scripts/buildsystems/vcpkg.cmake",
+        "VCPKG_DEFAULT_TRIPLET": "arm64-osx",
+        "CMAKE_BUILD_TYPE": "Release",
+        "ENABLE_SANITIZERS": "OFF"
+      }
     }
   ],
   "buildPresets": [
@@ -35,6 +47,10 @@
     {
       "name": "dev",
       "configurePreset": "dev"
+    },
+    {
+      "name": "perf",
+      "configurePreset": "perf"
     }
   ],
   "testPresets": [

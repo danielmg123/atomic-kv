@@ -36,19 +36,21 @@ target_include_directories(kv_tests PRIVATE ${PROJECT_SOURCE_DIR}/include)
 target_link_libraries(kv_tests PRIVATE kv_core GTest::gtest)
 add_test(NAME all COMMAND kv_tests)
 
-# Benchmarks (REAL benchmark file!)
+# Benchmarks
 add_executable(kv_bench benchmarks/lock_free_hash_map_bench.cpp)
 target_include_directories(kv_bench PRIVATE ${PROJECT_SOURCE_DIR}/include)
 target_link_libraries(kv_bench PRIVATE kv_core benchmark::benchmark_main)
 
-# Enable sanitizers (Debug only — not for perf testing!)
+# Optionally enable sanitizers (default ON for CI/dev, OFF for perf builds)
 option(ENABLE_SANITIZERS "Enable address/undefined sanitizers" ON)
 if (ENABLE_SANITIZERS)
-    message(STATUS "Building with sanitizers enabled")
-    foreach(target IN ITEMS kv_tests kv_server kv_cli kv_bench)
-        target_compile_options(${target} PRIVATE -fsanitize=address,undefined)
-        target_link_options(${target} PRIVATE -fsanitize=address,undefined)
-    endforeach()
+  message(STATUS "Building with sanitizers enabled")
+  foreach(target IN ITEMS kv_tests kv_server kv_cli kv_bench)
+    target_compile_options(${target} PRIVATE -fsanitize=address,undefined)
+    target_link_options   (${target} PRIVATE -fsanitize=address,undefined)
+  endforeach()
+else()
+  message(STATUS "Building WITHOUT sanitizers (perf mode)")
 endif()
 
 # Use LLD for faster linking with Clang

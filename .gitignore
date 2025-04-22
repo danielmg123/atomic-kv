@@ -50,3 +50,9 @@ sanitizer-output.*
 
 # Pre-commit / tool caches
 .cache/
+
+# Performance build output
+build-perf/
+
+# vcpkg source and build artifacts
+vcpkg/
