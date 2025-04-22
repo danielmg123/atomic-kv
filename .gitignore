@@ -56,3 +56,6 @@ build-perf/
 
 # vcpkg source and build artifacts
 vcpkg/
+
+# CTest output
+Testing/

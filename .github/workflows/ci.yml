@@ -22,5 +22,5 @@ jobs:
       - name: Build
         run: cmake --build --preset ci
 
-      - name: Test
-        run: ctest --preset ci --output-on-failure
+      - name: Test (unit + smoke)
+        run: BUILD_DIR=build ctest --preset ci --output-on-failure

@@ -1,45 +1,69 @@
 #include "lock_free_hash_map.hpp"
+#include <arpa/inet.h>
 #include <asio.hpp>
+#include <csignal>
 #include <iostream>
+#include <netinet/in.h>
 #include <sstream>
 #include <string>
+#include <sys/socket.h>
+#include <thread>
+#include <vector>
 
 using asio::ip::tcp;
 using kv::LockFreeHashMap;
 
-// our global, in‑memory store
 static LockFreeHashMap<std::string, std::string> KV;
 
-// Parse a single request line and produce a response
-std::string handle_request(const std::string &line) {
-  std::istringstream iss(line);
-  std::string cmd, key;
-  iss >> cmd >> key;
+// Handle a single client session
+void session(tcp::socket sock) {
+  try {
+    // Enforce a 5s read timeout on the underlying socket
+    struct timeval tv {
+      .tv_sec = 5, .tv_usec = 0
+    };
+    ::setsockopt(sock.native_handle(), SOL_SOCKET, SO_RCVTIMEO, &tv,
+                 sizeof(tv));
 
-  std::ostringstream oss;
-  if (cmd == "GET") {
-    auto v = KV.get(key);
-    if (v)
-      oss << "+VALUE " << *v;
-    else
-      oss << "-ERR NotFound";
-  } else if (cmd == "SET") {
-    // everything after “SET key” is the value
-    std::string value;
-    std::getline(iss, value);
-    if (!value.empty() && value.front() == ' ')
-      value.erase(0, 1);
-    KV.put(key, std::move(value));
-    oss << "+OK";
-  } else if (cmd == "DEL") {
-    if (KV.erase(key))
+    asio::streambuf buf;
+    asio::read_until(sock, buf, "\n");
+
+    std::istream is(&buf);
+    std::string line;
+    std::getline(is, line);
+
+    std::istringstream iss(line);
+    std::string cmd, key;
+    iss >> cmd >> key;
+
+    std::ostringstream oss;
+    if (cmd == "GET") {
+      auto v = KV.get(key);
+      if (v)
+        oss << "+VALUE " << *v;
+      else
+        oss << "-ERR NotFound";
+    } else if (cmd == "SET") {
+      std::string value;
+      std::getline(iss, value);
+      if (!value.empty() && value.front() == ' ')
+        value.erase(0, 1);
+      KV.put(key, std::move(value));
       oss << "+OK";
-    else
-      oss << "-ERR NotFound";
-  } else {
-    oss << "-ERR UnknownCommand";
+    } else if (cmd == "DEL") {
+      if (KV.erase(key))
+        oss << "+OK";
+      else
+        oss << "-ERR NotFound";
+    } else {
+      oss << "-ERR UnknownCommand";
+    }
+
+    auto response = oss.str() + "\n";
+    asio::write(sock, asio::buffer(response));
+  } catch (const std::exception &e) {
+    std::cerr << "Session error: " << e.what() << '\n';
   }
-  return oss.str();
 }
 
 int main(int argc, char *argv[]) {
@@ -48,33 +72,51 @@ int main(int argc, char *argv[]) {
     port = static_cast<unsigned short>(std::stoi(argv[1]));
 
   asio::io_context io_ctx;
-  tcp::acceptor acceptor(io_ctx, tcp::endpoint(tcp::v4(), port));
-  std::cout << "KV server listening on port " << port << "\n";
 
-  // simple thread‐pool: each session gets its own worker thread
-  const auto max_threads = std::max(1u, std::thread::hardware_concurrency());
+  // Setup acceptor
+  tcp::endpoint ep(tcp::v4(), port);
+  tcp::acceptor acceptor(io_ctx);
+  acceptor.open(ep.protocol());
+  acceptor.set_option(asio::socket_base::reuse_address(true));
+  acceptor.bind(ep);
+  acceptor.listen();
 
-  while (true) {
-    tcp::socket sock(io_ctx);
-    acceptor.accept(sock);
+  // Handle shutdown signals
+  asio::signal_set signals(io_ctx, SIGINT, SIGTERM);
+  signals.async_wait([&](auto /*ec*/, auto /*sig*/) {
+    std::cout << "Signal received, shutting down..." << '\n';
+    acceptor.close();
+    io_ctx.stop();
+  });
 
-    // hand off each connection to its own thread
-    std::thread([s = std::move(sock)]() mutable {
-      try {
-        asio::streambuf buf;
-        asio::read_until(s, buf, "\n");
+  std::cout << "KV server listening on port " << port << '\n';
 
-        std::istream is(&buf);
-        std::string line;
-        std::getline(is, line);
-
-        auto resp = handle_request(line) + "\n";
-        asio::write(s, asio::buffer(resp));
-      } catch (std::exception &e) {
-        std::cerr << "Session error: " << e.what() << "\n";
+  // Async accept loop
+  std::function<void()> do_accept;
+  do_accept = [&]() {
+    acceptor.async_accept([&](std::error_code ec, tcp::socket sock) {
+      if (!ec) {
+        asio::post(io_ctx,
+                   [s = std::move(sock)]() mutable { session(std::move(s)); });
       }
-    }).detach();
+      if (acceptor.is_open())
+        do_accept();
+    });
+  };
+  do_accept();
+
+  // Run on a thread pool
+  unsigned int thread_count = std::max(1u, std::thread::hardware_concurrency());
+  std::vector<std::thread> pool;
+  pool.reserve(thread_count);
+  for (unsigned int i = 0; i < thread_count; ++i) {
+    pool.emplace_back([&]() { io_ctx.run(); });
   }
 
+  // Wait for threads to finish
+  for (auto &t : pool)
+    t.join();
+
+  std::cout << "KV server shut down cleanly." << '\n';
   return 0;
 }

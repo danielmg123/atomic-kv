@@ -36,6 +36,11 @@ target_include_directories(kv_tests PRIVATE ${PROJECT_SOURCE_DIR}/include)
 target_link_libraries(kv_tests PRIVATE kv_core GTest::gtest)
 add_test(NAME all COMMAND kv_tests)
 
+# Smoke test for integration
+add_test(NAME smoke_test
+         COMMAND bash ${CMAKE_SOURCE_DIR}/scripts/smoke_test.sh)
+set_tests_properties(smoke_test PROPERTIES LABELS "integration")
+
 # Benchmarks
 add_executable(kv_bench benchmarks/lock_free_hash_map_bench.cpp)
 target_include_directories(kv_bench PRIVATE ${PROJECT_SOURCE_DIR}/include)
