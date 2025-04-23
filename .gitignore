@@ -60,3 +60,6 @@ vcpkg/
 
 # CTest output
 Testing/
+
+# Doxygen generated files
+docs/api/html/
