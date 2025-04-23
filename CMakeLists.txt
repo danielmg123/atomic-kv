@@ -15,7 +15,7 @@ find_package(benchmark CONFIG REQUIRED)
 
 # Core KV library
 add_library(kv_core STATIC src/kv_core.cpp)
-target_include_directories(kv_core PUBLIC ${PROJECT_SOURCE_DIR}/include)
+target_include_directories(kv_core PUBLIC $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include> $<INSTALL_INTERFACE:include>)
 target_link_libraries(kv_core PUBLIC fmt::fmt asio::asio spdlog::spdlog)
 
 # CLI tool
@@ -62,3 +62,17 @@ endif()
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang|AppleClang")
     add_link_options(-fuse-ld=lld)
 endif()
+
+# Install rules
+install(TARGETS kv_core kv_cli kv_server
+        EXPORT kvstoreTargets
+        RUNTIME DESTINATION bin
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib)
+
+install(EXPORT kvstoreTargets
+        FILE kvstoreConfig.cmake
+        NAMESPACE kv::
+        DESTINATION lib/cmake/kvstore)
+
+install(DIRECTORY include/ DESTINATION include)
