@@ -1,0 +1,48 @@
+# Doxyfile  
+# Doxygen configuration for atomic-kv project
+
+# Project metadata
+PROJECT_NAME           = "atomic-kv"
+PROJECT_NUMBER         = "v0.1.0"
+OUTPUT_DIRECTORY       = docs/api
+
+do_input               = .
+RECURSIVE              = YES
+
+dot_path               =
+HAVE_DOT               = NO
+
+# Generate HTML
+GENERATE_HTML          = YES
+HTML_OUTPUT            = html
+
+# Generate LaTeX (optional)
+GENERATE_LATEX         = NO
+
+# Source browsing
+SOURCE_BROWSER         = YES
+INLINE_SOURCES         = YES
+
+# File patterns
+FILE_PATTERNS          = *.cpp *.hpp
+
+# Exclude directories
+EXCLUDE                = build,venv,vcpkg
+
+# Strip path prefixes
+STRIP_FROM_PATH        = .
+
+# Warn if undocumented
+WARN_IF_UNDOCUMENTED   = YES
+
+# Use Markdown
+MARKDOWN_SUPPORT       = YES
+
+# Extract all entities
+EXTRACT_ALL            = YES
+
+# Include private members
+EXTRACT_PRIVATE        = NO
+
+# Quiet mode
+QUIET                  = YES
