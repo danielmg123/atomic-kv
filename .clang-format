@@ -1,0 +1,10 @@
+# .clang-format
+# Project-wide clang-format rules, based on Google style
+BasedOnStyle: Google
+IndentWidth: 2
+UseTab: Never
+ColumnLimit: 100
+AllowShortFunctionsOnASingleLine: Inline
+PointerAlignment: Left
+DerivePointerAlignment: false
+SpaceBeforeParens: ControlStatements

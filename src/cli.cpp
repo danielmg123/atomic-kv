@@ -4,7 +4,7 @@
 
 using asio::ip::tcp;
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
   if (argc < 3) {
     std::cerr << "Usage: kv-cli <GET|SET|DEL> <key> [value]\n";
     return 1;
@@ -24,8 +24,7 @@ int main(int argc, char *argv[]) {
 
   // build request line
   std::string req = cmd + " " + key;
-  if (cmd == "SET")
-    req += " " + val;
+  if (cmd == "SET") req += " " + val;
   req += "\n";
 
   try {
@@ -42,7 +41,7 @@ int main(int argc, char *argv[]) {
     std::string line;
     std::getline(is, line);
     std::cout << line << "\n";
-  } catch (std::exception &e) {
+  } catch (std::exception& e) {
     std::cerr << "CLI error: " << e.what() << "\n";
     return 1;
   }

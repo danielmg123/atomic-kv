@@ -1,13 +1,15 @@
-#include "../include/lock_free_hash_map.hpp"
 #include <benchmark/benchmark.h>
+
 #include <memory>
+
+#include "../include/lock_free_hash_map.hpp"
 
 using kv::LockFreeHashMap;
 
 //-----------------------------------------------------------------------------
 // Single‑threaded insertion of N elements into a fresh map
 //-----------------------------------------------------------------------------
-static void BM_Put(benchmark::State &state) {
+static void BM_Put(benchmark::State& state) {
   auto N = state.range(0);
   for (auto _ : state) {
     // build on the heap to avoid huge stack frames
@@ -23,7 +25,7 @@ BENCHMARK(BM_Put)->Arg(10'000)->Arg(100'000);
 //-----------------------------------------------------------------------------
 // Single‑threaded lookup of N existing elements
 //-----------------------------------------------------------------------------
-static void BM_GetExisting(benchmark::State &state) {
+static void BM_GetExisting(benchmark::State& state) {
   auto N = state.range(0);
   for (auto _ : state) {
     auto map = std::make_unique<LockFreeHashMap<int, int>>();
@@ -41,7 +43,7 @@ BENCHMARK(BM_GetExisting)->Arg(10'000)->Arg(100'000);
 //-----------------------------------------------------------------------------
 // Single‑threaded erase of N elements from a fresh map
 //-----------------------------------------------------------------------------
-static void BM_Erase(benchmark::State &state) {
+static void BM_Erase(benchmark::State& state) {
   auto N = state.range(0);
   for (auto _ : state) {
     auto map = std::make_unique<LockFreeHashMap<int, int>>();
@@ -59,7 +61,7 @@ BENCHMARK(BM_Erase)->Arg(10'000)->Arg(100'000);
 //-----------------------------------------------------------------------------
 // Multi‑threaded insertion: each thread adds its own range of keys
 //-----------------------------------------------------------------------------
-static void BM_ConcurrentPut(benchmark::State &state) {
+static void BM_ConcurrentPut(benchmark::State& state) {
   static LockFreeHashMap<int, int> map;
   auto per_thread = state.range(0);
   static thread_local int counter = 0;
@@ -76,7 +78,7 @@ BENCHMARK(BM_ConcurrentPut)->Arg(100'000)->Threads(1)->Threads(4)->Threads(8);
 //-----------------------------------------------------------------------------
 // Mixed workload: 50% puts, 50% gets on a pre‑populated map
 //-----------------------------------------------------------------------------
-static void BM_MixedWorkload(benchmark::State &state) {
+static void BM_MixedWorkload(benchmark::State& state) {
   static LockFreeHashMap<int, int> map;
   static bool populated = false;
   auto total = state.range(0);

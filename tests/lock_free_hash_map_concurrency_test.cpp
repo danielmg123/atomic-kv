@@ -1,7 +1,9 @@
-#include "../include/lock_free_hash_map.hpp"
 #include <gtest/gtest.h>
+
 #include <thread>
 #include <vector>
+
+#include "../include/lock_free_hash_map.hpp"
 
 using kv::LockFreeHashMap;
 
@@ -23,8 +25,7 @@ TEST(LockFreeHashMapConcurrency, ParallelInsertGet) {
       }
     });
   }
-  for (auto &th : threads)
-    th.join();
+  for (auto& th : threads) th.join();
 
   // Verify all entries
   for (int t = 0; t < num_threads; ++t) {
@@ -32,8 +33,7 @@ TEST(LockFreeHashMapConcurrency, ParallelInsertGet) {
     for (int i = 0; i < ops_per_thread; ++i) {
       auto v = map.get(base + i);
       EXPECT_TRUE(v.has_value());
-      if (v)
-        EXPECT_EQ(v.value(), base + i);
+      if (v) EXPECT_EQ(v.value(), base + i);
     }
   }
 }

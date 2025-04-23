@@ -1,14 +1,16 @@
-#include "lock_free_hash_map.hpp"
 #include <arpa/inet.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
+
 #include <asio.hpp>
 #include <csignal>
 #include <iostream>
-#include <netinet/in.h>
 #include <sstream>
 #include <string>
-#include <sys/socket.h>
 #include <thread>
 #include <vector>
+
+#include "lock_free_hash_map.hpp"
 
 using asio::ip::tcp;
 using kv::LockFreeHashMap;
@@ -22,8 +24,7 @@ void session(tcp::socket sock) {
     struct timeval tv {
       .tv_sec = 5, .tv_usec = 0
     };
-    ::setsockopt(sock.native_handle(), SOL_SOCKET, SO_RCVTIMEO, &tv,
-                 sizeof(tv));
+    ::setsockopt(sock.native_handle(), SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
 
     asio::streambuf buf;
     asio::read_until(sock, buf, "\n");
@@ -46,8 +47,7 @@ void session(tcp::socket sock) {
     } else if (cmd == "SET") {
       std::string value;
       std::getline(iss, value);
-      if (!value.empty() && value.front() == ' ')
-        value.erase(0, 1);
+      if (!value.empty() && value.front() == ' ') value.erase(0, 1);
       KV.put(key, std::move(value));
       oss << "+OK";
     } else if (cmd == "DEL") {
@@ -61,15 +61,14 @@ void session(tcp::socket sock) {
 
     auto response = oss.str() + "\n";
     asio::write(sock, asio::buffer(response));
-  } catch (const std::exception &e) {
+  } catch (const std::exception& e) {
     std::cerr << "Session error: " << e.what() << '\n';
   }
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
   unsigned short port = 12345;
-  if (argc > 1)
-    port = static_cast<unsigned short>(std::stoi(argv[1]));
+  if (argc > 1) port = static_cast<unsigned short>(std::stoi(argv[1]));
 
   asio::io_context io_ctx;
 
@@ -96,11 +95,9 @@ int main(int argc, char *argv[]) {
   do_accept = [&]() {
     acceptor.async_accept([&](std::error_code ec, tcp::socket sock) {
       if (!ec) {
-        asio::post(io_ctx,
-                   [s = std::move(sock)]() mutable { session(std::move(s)); });
+        asio::post(io_ctx, [s = std::move(sock)]() mutable { session(std::move(s)); });
       }
-      if (acceptor.is_open())
-        do_accept();
+      if (acceptor.is_open()) do_accept();
     });
   };
   do_accept();
@@ -114,8 +111,7 @@ int main(int argc, char *argv[]) {
   }
 
   // Wait for threads to finish
-  for (auto &t : pool)
-    t.join();
+  for (auto& t : pool) t.join();
 
   std::cout << "KV server shut down cleanly." << '\n';
   return 0;

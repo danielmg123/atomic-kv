@@ -1,4 +1,5 @@
 #include "../include/lock_free_hash_map.hpp"
+
 #include <gtest/gtest.h>
 
 using kv::LockFreeHashMap;
@@ -47,7 +48,7 @@ TEST(LockFreeHashMapTest, MultipleKeys) {
   EXPECT_EQ(map.get(3).value_or(-1), 300);
 }
 
-auto main(int argc, char **argv) -> int {
+auto main(int argc, char** argv) -> int {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }
