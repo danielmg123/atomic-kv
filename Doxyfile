@@ -1,12 +1,12 @@
-# Doxyfile  
-# Doxygen configuration for atomic-kv project
+# Doxyfile
+# Doxygen configuration for the atomic-kv project
 
 # Project metadata
 PROJECT_NAME           = "atomic-kv"
 PROJECT_NUMBER         = "v0.1.0"
 OUTPUT_DIRECTORY       = docs/api
 
-do_input               = .
+INPUT                  = .
 RECURSIVE              = YES
 
 dot_path               =
