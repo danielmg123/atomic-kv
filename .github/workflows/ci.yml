@@ -1,5 +1,9 @@
 name: CI
 
+permissions:
+  contents: read
+  pages: write
+
 on: [push, pull_request]
 
 jobs:
@@ -39,7 +43,6 @@ jobs:
   build:
     needs: [fmt-check, tidy-check]
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -62,9 +65,14 @@ jobs:
   docs:
     needs: [build]
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pages: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: Install Doxygen
         run: sudo apt-get update && sudo apt-get install -y doxygen
