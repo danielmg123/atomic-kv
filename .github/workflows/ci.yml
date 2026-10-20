@@ -49,6 +49,9 @@ jobs:
 
       - name: Install CMake & Ninja
         uses: lukka/get-cmake@latest
+        with:
+          cmakeVersion: 3.31.6
+          ninjaVersion: 1.11.1
 
       - name: Bootstrap vcpkg
         uses: lukka/run-vcpkg@v11
