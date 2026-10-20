@@ -7,8 +7,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Dependencies via vcpkg
-find_package(fmt CONFIG REQUIRED)
-find_package(spdlog CONFIG REQUIRED)
 find_package(asio CONFIG REQUIRED)
 find_package(GTest CONFIG REQUIRED)
 find_package(benchmark CONFIG REQUIRED)
@@ -16,7 +14,7 @@ find_package(benchmark CONFIG REQUIRED)
 # Core KV library
 add_library(kv_core STATIC src/kv_core.cpp)
 target_include_directories(kv_core PUBLIC $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include> $<INSTALL_INTERFACE:include>)
-target_link_libraries(kv_core PUBLIC fmt::fmt asio::asio spdlog::spdlog)
+target_link_libraries(kv_core PUBLIC asio::asio)
 
 # CLI tool
 add_executable(kv_cli src/cli.cpp)

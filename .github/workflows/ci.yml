@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
 
       - name: Install clang-format
         run: sudo apt-get update && sudo apt-get install -y clang-format
@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
 
       - name: Bootstrap vcpkg
         uses: lukka/run-vcpkg@v11
@@ -34,7 +34,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y clang-tidy cmake g++ make ninja-build
 
       - name: Configure project
-        run: cmake --preset ci
+        run: VCPKG_BINARY_SOURCES=clear cmake --preset ci
 
       - name: Run clang-tidy
         run: |
@@ -45,7 +45,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
 
       - name: Install CMake & Ninja
         uses: lukka/get-cmake@latest
@@ -54,7 +54,7 @@ jobs:
         uses: lukka/run-vcpkg@v11
 
       - name: Configure (show CMake errors)
-        run: cmake --preset ci
+        run: VCPKG_BINARY_SOURCES=clear cmake --preset ci
 
       - name: Build
         run: cmake --build --preset ci
@@ -70,7 +70,7 @@ jobs:
       pages: write
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
